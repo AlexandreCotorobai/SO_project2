@@ -166,9 +166,11 @@ static bool waitFriends(int id)
         exit (EXIT_FAILURE);
     }
 
-    //if the person is not the last it waits
+    /* insert your code here */
+
     sh->fSt.tableClients++;
-    
+    sh->fSt.st.clientStat[id] = WAIT_FOR_FRIENDS;
+
     if(sh->fSt.tableClients == 1){
         first = true;
         sh->fSt.tableFirst = id;
@@ -182,9 +184,7 @@ static bool waitFriends(int id)
 
     }
     
-    sh->fSt.st.clientStat[id] = WAIT_FOR_FRIENDS;
     saveState(nFic, &(sh->fSt));
-       /* insert your code here */
 
 
     if (semUp (semgid, sh->mutex) == -1)                                                      /* exit critical region */
@@ -220,10 +220,14 @@ static void orderFood (int id)
 
     /* insert your code here */
     sh->fSt.foodRequest = 1;
-    semUp(semgid, sh->waiterRequest);
+
     sh->fSt.st.clientStat[id] = FOOD_REQUEST;
     saveState(nFic, &(sh->fSt));
 
+    if (semUp(semgid, sh->waiterRequest) == -1) {
+        perror("error on the up operation for semaphore access(CT)");
+        exit(EXIT_FAILURE);
+    }
     if (semUp (semgid, sh->mutex) == -1)                                                      /* exit critical region */
     { perror ("error on the up operation for semaphore access (CT)");
         exit (EXIT_FAILURE);
@@ -263,7 +267,10 @@ static void waitFood (int id)
     }
 
     /* insert your code here */
-    semDown(semgid, sh->foodArrived);
+    if (semDown(semgid, sh->foodArrived) == -1) {
+        perror("error on the up operation for semaphore access(CT)");
+        exit(EXIT_FAILURE);
+    }
 
     if (semDown (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
         perror ("error on the down operation for semaphore access (CT)");
@@ -301,7 +308,9 @@ static void waitAndPay (int id)
     
     
     /* insert your code here */
+
     last = (sh->fSt.tableLast == id);
+
     sh->fSt.st.clientStat[id] = WAIT_FOR_OTHERS;
     saveState(nFic, &(sh->fSt));
 
@@ -334,6 +343,7 @@ static void waitAndPay (int id)
         }
 
         /* insert your code here */
+
         sh->fSt.st.clientStat[id] = WAIT_FOR_BILL;
         saveState(nFic, &sh->fSt);
         sh->fSt.paymentRequest = 1;
@@ -349,11 +359,12 @@ static void waitAndPay (int id)
         }
 
         /* insert your code here */
+
         if (semDown (semgid, sh->requestReceived) == -1) {                                          /* exit critical region */
             perror ("error on the down operation for semaphore access (CT)");
             exit (EXIT_FAILURE);
         }
-        //semDown(semgid, sh->requestReceived);
+
     }
 
     if (semDown (semgid, sh->mutex) == -1) {                                                  /* enter critical region */
@@ -362,6 +373,7 @@ static void waitAndPay (int id)
     }
 
     /* insert your code here */
+    
     sh->fSt.st.clientStat[id] = FINISHED;
     saveState(nFic, &(sh->fSt));
 

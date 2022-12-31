@@ -150,6 +150,7 @@ static int waitForClientOrChef()
     }
 
     /* insert your code here */
+
     sh->fSt.st.waiterStat = WAIT_FOR_REQUEST;
     saveState(nFic, &(sh->fSt));
 
@@ -171,6 +172,7 @@ static int waitForClientOrChef()
     }
 
     /* insert your code here */
+
     if (sh->fSt.foodRequest == 1) {
         ret = FOODREQ;
         sh->fSt.foodRequest = 0;
@@ -183,7 +185,7 @@ static int waitForClientOrChef()
     }
     
     if (ret == '\0'){
-        perror ("ret!=0 semSharedMemWaiter.c waitForClientOrChef");
+        perror ("waitForClientOrChef: error in return value (WT)");
         exit (EXIT_FAILURE);
     }
 
@@ -211,6 +213,7 @@ static void informChef ()
     }
 
     /* insert your code here */
+
     sh->fSt.foodOrder = 1;
     sh->fSt.st.waiterStat = INFORM_CHEF;
     saveState(nFic, &(sh->fSt));
@@ -221,6 +224,7 @@ static void informChef ()
     }
 
     /* insert your code here */
+
     if (semUp (semgid, sh->requestReceived) == -1) {
         perror ("error on the up operation for semaphore access (WT)");
         exit (EXIT_FAILURE);
@@ -275,6 +279,7 @@ static void receivePayment ()
     }
 
     /* insert your code here */
+    
     sh->fSt.st.waiterStat=RECEIVE_PAYMENT;
     saveState (nFic, &sh->fSt);
 

@@ -116,8 +116,7 @@ int main (int argc, char *argv[])
 static void waitForOrder ()
 {
     /* insert your code here */
-    // sh->fSt.st.chefStat = WAIT_FOR_ORDER;
-    // saveState(nFic, &(sh->fSt));
+
     if (semDown(semgid, sh->waitOrder) == -1) {                                                   /* enter critical region */
         perror("error on the down operation for semaphore access (PT)");
         exit(EXIT_FAILURE);
@@ -155,10 +154,6 @@ static void processOrder ()
     }
 
     /* insert your code here */
-    // if(sh->fSt.foodOrder = 1){
-    //     sh->fSt.st.chefStat = COOK;
-    //     saveState(nFic, &sh->fSt);
-    // }
 
     sh->fSt.foodReady = 1;
     sh->fSt.st.chefStat = REST;
